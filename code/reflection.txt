@@ -1,6 +1,15 @@
-Write your reflection here.
-
-See reflection.md for what makes a good reflection — be specific, use the
-terminology from this assignment (package, module, ETL, coercion, public API,
-relative import, accumulator, group by, unit vs. integration test), and make it
-actionable.
+Building sales_pipeline as a package meant that when Marketing needed a roll-up Finance never asked for, 
+I added summarize_by_item and find_top_entry to transform.py without touching main_finance_report.py at all. 
+That paid off in main_daily_report.py: once I wrote summarize_by_day, find_top_entry ranked days by revenue or 
+units_sold the same way it ranked items, since it only checks entry[field], never what an entry actually is. 
+Coercion had to be precise: clean_currency and clean_quantity guard None, then wrap the real conversion in try/except 
+ValueError, so I never had to list every way a row could be broken, just trust that a bad value would raise. 
+summarize_by_item and summarize_by_day use the same accumulator pattern, a dictionary keyed by name or date, 
+but sort differently on purpose: items rank by revenue descending, days run earliest first, since a ranking and a 
+timeline serve the reader differently. Declaring the public API in __init__.py forced a real decision, 
+since clean_currency and clean_quantity work fine but stay out of __all__ because they're internal plumbing, 
+not something a report should call. Relative imports (from .transform import ...) made that internal/external 
+boundary explicit instead of just something I had to remember. The split between unit and integration tests made 
+debugging directional: a failing unit test meant the function itself was wrong, while a passing unit test with a 
+failing _on_generated_data partner meant something upstream was feeding it bad data. Next time I'd add a quick smoke 
+test in transform.py earlier, rather than waiting for the integration tests to catch it.
