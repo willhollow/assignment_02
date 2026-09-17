@@ -182,8 +182,15 @@ def summarize_by_item(cleaned_data: list[dict]) -> list[dict]:
       `key=lambda entry: (-entry["revenue"], entry["item"])`. The tuple reads as
       "sort by revenue, biggest first, and use the name to break ties."
     """
-    # TODO: your code here
-    pass
+    totals = {}
+    for row in cleaned_data:
+        item = row["item"]
+        if item not in totals:
+            totals[item] = {"item": item, "units_sold": 0, "revenue": 0.0}
+        totals[item]["units_sold"] += row["qty"]
+        totals[item]["revenue"] += row["total_revenue"]
+
+    return sorted(totals.values(), key=lambda entry: (-entry["revenue"], entry["item"]))
 
 
 def summarize_by_day(cleaned_data: list[dict]) -> list[dict]:
@@ -216,8 +223,15 @@ def summarize_by_day(cleaned_data: list[dict]) -> list[dict]:
       twice under two spellings. Do still guard the "first time I have seen this
       date" case, or the first row of each day has nothing to add itself to.
     """
-    # TODO: your code here
-    pass
+    totals = {}
+    for row in cleaned_data:
+        date = row["date"]
+        if date not in totals:
+            totals[date] = {"date": date, "units_sold": 0, "revenue": 0.0}
+        totals[date]["units_sold"] += row["qty"]
+        totals[date]["revenue"] += row["total_revenue"]
+
+    return sorted(totals.values(), key=lambda entry: entry["date"])
 
 
 def find_top_entry(summary: list[dict], field: str = "revenue") -> dict:
@@ -250,5 +264,10 @@ def find_top_entry(summary: list[dict], field: str = "revenue") -> dict:
       by revenue. It is only sorted by *revenue*, so that answer is wrong the moment
       someone asks for `units_sold`.
     """
-    # TODO: your code here
-    pass
+    if not summary:
+        return {}
+    winner = summary[0]
+    for entry in summary[1:]:
+        if entry[field] > winner[field]:
+            winner = entry
+    return winner
