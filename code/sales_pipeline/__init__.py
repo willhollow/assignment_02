@@ -67,11 +67,6 @@ HOW TO BUILD IT
 # One group per module. The leading dot on each is what makes these *relative*
 # imports — "from the display module that sits beside this file", not "from some
 # package called display installed on this machine".
-
-# TODO: import the public functions here, using relative imports.
-#       One group per module — .extract, then .transform, then .display.
-#       Start with only the functions you have actually written (see note 2 above),
-#       and come back to add the rest as you go.
 from .extract import get_raw_sales_data
 from .transform import (
     calculate_total_revenue,
